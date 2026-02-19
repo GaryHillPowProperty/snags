@@ -24,11 +24,26 @@ export function createServer() {
   app.use(cors({ 
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin) {
         callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
+        return;
       }
+      // Allow localhost for development
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        callback(null, true);
+        return;
+      }
+      // Allow all Vercel preview URLs
+      if (origin.includes('.vercel.app')) {
+        callback(null, true);
+        return;
+      }
+      // Allow explicitly configured origins
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error('Not allowed by CORS'));
     },
     credentials: true
   }));
