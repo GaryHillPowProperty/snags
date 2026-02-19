@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create PWA Icons</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        .icon-preview {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #334155;
+            border-radius: 8px;
+        }
+        canvas {
+            border: 2px solid #475569;
+            border-radius: 8px;
+            background: white;
+            display: block;
+            margin: 1rem 0;
+        }
+        button {
+            padding: 0.75rem 1.5rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .instructions {
+            background: #0f172a;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 PWA Icon Generator</h1>
+    <div class="instructions">
+        <p><strong>Instructions:</strong></p>
+        <ol>
+            <li>Click "Download 192x192" and save as <code>icon-192.png</code></li>
+            <li>Click "Download 512x512" and save as <code>icon-512.png</code></li>
+            <li>Place both files in the <code>frontend/public/</code> folder</li>
+        </ol>
+    </div>
+
+    <div class="icon-preview">
+        <h2>192x192 Icon</h2>
+        <canvas id="icon192" width="192" height="192"></canvas>
+        <button onclick="downloadIcon('icon192', 'icon-192.png')">📥 Download 192x192</button>
+    </div>
+
+    <div class="icon-preview">
+        <h2>512x512 Icon</h2>
+        <canvas id="icon512" width="512" height="512"></canvas>
+        <button onclick="downloadIcon('icon512', 'icon-512.png')">📥 Download 512x512</button>
+    </div>
+
+    <script>
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#3b82f6');
+            gradient.addColorStop(1, '#2563eb');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Draw microphone icon
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const micWidth = size * 0.15;
+            const micHeight = size * 0.4;
+            const standWidth = size * 0.05;
+            const standHeight = size * 0.15;
+            const baseRadius = size * 0.08;
+            const cornerRadius = size * 0.02;
+            
+            // Microphone body (rounded rectangle)
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(centerX - micWidth / 2 + cornerRadius, centerY - micHeight / 2);
+            ctx.lineTo(centerX + micWidth / 2 - cornerRadius, centerY - micHeight / 2);
+            ctx.quadraticCurveTo(centerX + micWidth / 2, centerY - micHeight / 2, centerX + micWidth / 2, centerY - micHeight / 2 + cornerRadius);
+            ctx.lineTo(centerX + micWidth / 2, centerY + micHeight / 2 - cornerRadius);
+            ctx.quadraticCurveTo(centerX + micWidth / 2, centerY + micHeight / 2, centerX + micWidth / 2 - cornerRadius, centerY + micHeight / 2);
+            ctx.lineTo(centerX - micWidth / 2 + cornerRadius, centerY + micHeight / 2);
+            ctx.quadraticCurveTo(centerX - micWidth / 2, centerY + micHeight / 2, centerX - micWidth / 2, centerY + micHeight / 2 - cornerRadius);
+            ctx.lineTo(centerX - micWidth / 2, centerY - micHeight / 2 + cornerRadius);
+            ctx.quadraticCurveTo(centerX - micWidth / 2, centerY - micHeight / 2, centerX - micWidth / 2 + cornerRadius, centerY - micHeight / 2);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Microphone stand
+            ctx.fillRect(
+                centerX - standWidth / 2,
+                centerY + micHeight / 2,
+                standWidth,
+                standHeight
+            );
+            
+            // Microphone base (circle)
+            ctx.beginPath();
+            ctx.arc(centerX, centerY + micHeight / 2 + standHeight + baseRadius, baseRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Add subtle shadow
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+            ctx.shadowBlur = size * 0.02;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = size * 0.01;
+        }
+        
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            console.log(`Downloaded ${filename}`);
+        }
+        
+        // Draw icons on load
+        window.onload = function() {
+            drawIcon(document.getElementById('icon192'), 192);
+            drawIcon(document.getElementById('icon512'), 512);
+        };
+    </script>
+</body>
+</html>

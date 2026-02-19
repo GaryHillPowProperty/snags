@@ -1,0 +1,10 @@
+node_modules/
+.env
+*.db
+uploads/voice/*
+uploads/media/*
+!uploads/voice/.gitkeep
+!uploads/media/.gitkeep
+dist/
+*.log
+.DS_Store
