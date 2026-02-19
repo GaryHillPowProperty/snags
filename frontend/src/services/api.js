@@ -106,8 +106,8 @@ export async function syncSnagToClickUp(snagId) {
 export async function syncAuditToClickUp(auditId) {
   const res = await fetch(`${API}/clickup/sync-audit/${auditId}`, { method: 'POST' });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || 'Sync failed');
+    const err = await res.json().catch(() => ({ error: `HTTP ${res.status}: ${res.statusText}` }));
+    throw new Error(err.error || `Sync failed: ${res.status} ${res.statusText}`);
   }
   return res.json();
 }

@@ -47,12 +47,29 @@ export default function SnagReview() {
     setSyncing(true);
     setError('');
     try {
-      const { results } = await syncAuditToClickUp(auditId);
+      const response = await syncAuditToClickUp(auditId);
+      console.log('Sync response:', response);
+      const { results } = response;
+      
+      if (results && results.length > 0) {
+        const successCount = results.filter(r => r.status === 'created').length;
+        const failedCount = results.filter(r => r.status === 'failed').length;
+        const skippedCount = results.filter(r => r.status === 'skipped').length;
+        
+        let message = `Sync complete: ${successCount} created`;
+        if (skippedCount > 0) message += `, ${skippedCount} skipped`;
+        if (failedCount > 0) message += `, ${failedCount} failed`;
+        
+        // Show success message temporarily
+        setError(`✅ ${message}`);
+        setTimeout(() => setError(''), 5000);
+      }
+      
       const { snags: s } = await getSnagsByAudit(auditId);
       setSnags(s);
-      setError('');
     } catch (err) {
-      setError(err.message || 'Sync failed');
+      console.error('Sync error:', err);
+      setError(`❌ Sync failed: ${err.message || 'Unknown error'}`);
     } finally {
       setSyncing(false);
     }
